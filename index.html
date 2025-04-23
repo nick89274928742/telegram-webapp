@@ -3,93 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой мини-приложение для @adressprimerbot</title>
+    <title>Открытие приложения @adressprimerbot</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
+            text-align: center;
             padding: 20px;
             background-color: #f5f5f5;
-            color: #333;
         }
         .container {
             max-width: 600px;
             margin: 0 auto;
             background: white;
-            padding: 20px;
+            padding: 30px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
         }
-        h1 {
-            color: #0088cc;
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #0088cc;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
         }
-        button {
-            background-color: #0088cc;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 10px;
-        }
-        button:hover {
-            background-color: #006699;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Добро пожаловать!</h1>
-        <p>Это мини-приложение для бота @adressprimerbot</p>
-        
-        <button id="sendDataBtn">Отправить данные в Telegram</button>
-        <button id="closeBtn">Закрыть приложение</button>
-        
-        <div id="output" style="margin-top: 20px;"></div>
+        <h2>Перенаправление в приложение...</h2>
+        <div class="loader"></div>
+        <p>Если перенаправление не произошло автоматически, <a href="#" id="manualLink">нажмите сюда</a></p>
     </div>
 
     <script>
-        // Инициализация Telegram WebApp
-        const tg = window.Telegram.WebApp;
-        
-        // Показываем кнопку "Назад" в интерфейсе Telegram
-        tg.BackButton.show();
-        
-        // Обработчик кнопки "Назад"
-        tg.BackButton.onClick(() => {
-            tg.close();
-        });
-        
-        // Кнопка отправки данных
-        document.getElementById('sendDataBtn').addEventListener('click', () => {
-            const data = {
-                action: 'button_click',
-                time: new Date().toLocaleString(),
-                user: tg.initDataUnsafe.user?.username || 'unknown'
-            };
+        // Проверяем, открыто ли в Telegram WebApp
+        if (window.Telegram && Telegram.WebApp) {
+            // Если да - сразу закрываем прослойку и открываем основное приложение
+            Telegram.WebApp.openLink('https://t.me/adressprimerbot/app');
+            Telegram.WebApp.close();
+        } else {
+            // Если нет - перенаправляем в Telegram
+            document.getElementById('manualLink').href = 'tg://resolve?domain=adressprimerbot&startapp=app';
             
-            tg.sendData(JSON.stringify(data));
-            document.getElementById('output').innerHTML = 
-                '<p>Данные отправлены в бота!</p>';
-        });
-        
-        // Кнопка закрытия
-        document.getElementById('closeBtn').addEventListener('click', () => {
-            tg.close();
-        });
-        
-        // При загрузке показываем данные пользователя (если есть)
-        tg.expand();
-        if (tg.initDataUnsafe.user) {
-            const user = tg.initDataUnsafe.user;
-            document.getElementById('output').innerHTML = `
-                <p>Привет, ${user.first_name || 'пользователь'}!</p>
-                <p>Ваш ID: ${user.id}</p>
-                ${user.username ? `<p>@${user.username}</p>` : ''}
-            `;
+            // Пытаемся открыть в приложении Telegram
+            window.location.href = 'tg://resolve?domain=adressprimerbot&startapp=app';
+            
+            // Если не получилось - предлагаем открыть в браузере
+            setTimeout(() => {
+                if (!document.hidden) {
+                    document.querySelector('.container').innerHTML = `
+                        <h2>Не удалось открыть приложение</h2>
+                        <p>Попробуйте:</p>
+                        <ol>
+                            <li>Открыть ссылку в мобильном приложении Telegram</li>
+                            <li>Перейти к боту <a href="https://t.me/adressprimerbot">@adressprimerbot</a> и запустить приложение вручную</li>
+                        </ol>
+                    `;
+                }
+            }, 1500);
         }
     </script>
 </body>
