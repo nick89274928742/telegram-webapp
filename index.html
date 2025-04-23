@@ -3,58 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Карта на GitHub Pages</title>
+    <title>Карта в Telegram WebApp</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
             margin: 0;
             padding: 20px;
+            background-color: #f9f9f9;
             text-align: center;
         }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
         .map-button {
-            background-color: #2481cc;
+            background-color: #0088cc;
             color: white;
             border: none;
-            padding: 15px 25px;
-            font-size: 18px;
-            border-radius: 10px;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
             margin-top: 20px;
+            transition: background-color 0.3s;
         }
         .map-button:hover {
-            background-color: #1a6fb3;
+            background-color: #006699;
         }
     </style>
 </head>
 <body>
-    <h1>Карта золотоматов GoldEX</h1>
-    <p>Нажмите кнопку ниже, чтобы открыть карту:</p>
-    
-    <button class="map-button" onclick="openMap()">
-        <span style="font-size: 20px;">🗺️</span> Открыть карту
-    </button>
+    <div class="container">
+        <h1>🗺️ Карта в Telegram</h1>
+        <p>Найти золотомат Goldex</p>
+        
+        <button class="map-button" onclick="openMap()">
+            Открыть карту
+        </button>
+    </div>
 
     <script>
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram.WebApp;
+
+        // Функция для открытия карты
         function openMap() {
-            // URL вашей карты Яндекс
             const mapUrl = "https://yandex.ru/maps/?um=constructor%3A844b704ae5b61e9c52dd5d32437fabc714d378946f62e7a4a47c0cf32fd3b79f&source=constructorLink";
             
-            // Проверяем, открыто ли в Telegram WebApp
-            if (window.Telegram && Telegram.WebApp) {
-                Telegram.WebApp.openLink(mapUrl);
+            if (tg.platform !== "unknown") {
+                // Если открыто внутри Telegram, используем WebApp
+                tg.openLink(mapUrl, { try_instant_view: true });
             } else {
+                // Если открыто в браузере, просто переходим по ссылке
                 window.open(mapUrl, '_blank');
             }
         }
+
+        // Развернуть WebApp на весь экран (опционально)
+        tg.expand();
     </script>
 </body>
 </html>
