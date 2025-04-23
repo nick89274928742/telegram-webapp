@@ -7,42 +7,65 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            margin: 0;
-            padding: 0;
             font-family: Arial, sans-serif;
-            background: #f5f5f5;
-        }
-        #map-iframe {
-            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             height: 100vh;
-            border: none;
-        }
-        .header {
-            padding: 10px;
-            background: #0088cc;
+            margin: 0;
+            background: linear-gradient(135deg, #0088cc, #00cc88);
             color: white;
             text-align: center;
+        }
+        .btn {
+            background: white;
+            color: #0088cc;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+        .btn:active {
+            transform: translateY(1px);
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h2>🗺️ Карта в Telegram</h2>
-    </div>
-    <iframe 
-        id="map-iframe"
-        src="https://yandex.ru/maps/?um=constructor%3A844b704ae5b61e9c52dd5d32437fabc714d378946f62e7a4a47c0cf32fd3b79f&source=constructorLink"
-        allowfullscreen
-    ></iframe>
+    <h1>Найти золотомат GoldEX</h1>
+    <p>Нажмите кнопку, чтобы открыть карту прямо в Telegram</p>
+    
+    <button class="btn" onclick="openMap()">
+        Открыть карту
+    </button>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // Раскрыть на весь экран
-        tg.BackButton.show(); // Показать кнопку "Назад"
+        function openMap() {
+            const mapUrl = "https://yandex.ru/maps/?um=constructor%3A844b704ae5b61e9c52dd5d32437fabc714d378946f62e7a4a47c0cf32fd3b79f&source=constructorLink";
+            
+            if (window.Telegram?.WebApp?.initData) {
+                // Открываем в Telegram WebApp
+                Telegram.WebApp.openLink(mapUrl, {
+                    try_instant_view: true
+                });
+            } else {
+                // Для обычных браузеров
+                window.open(mapUrl, '_blank');
+            }
+        }
         
-        tg.BackButton.onClick(() => {
-            tg.close(); // Закрыть WebApp при нажатии "Назад"
-        });
+        // Растягиваем на весь экран в Telegram
+        if (window.Telegram?.WebApp?.expand) {
+            Telegram.WebApp.expand();
+        }
     </script>
 </body>
 </html>
