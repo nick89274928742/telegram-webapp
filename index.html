@@ -1,86 +1,60 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
-from flask import Flask
-import threading
-import requests
-import time
-import logging
-import os
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карта на GitHub Pages</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .map-button {
+            background-color: #2481cc;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .map-button:hover {
+            background-color: #1a6fb3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Интерактивная карта</h1>
+    <p>Нажмите кнопку ниже, чтобы открыть карту:</p>
+    
+    <button class="map-button" onclick="openMap()">
+        <span style="font-size: 20px;">🗺️</span> Открыть карту
+    </button>
 
-# Настройка логгирования
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# Конфигурация
-TOKEN = "8112751300:AAFLiYLc-39GtQHHxG_h4_5WSCTRdxx5nvU"
-MAP_URL = "https://yandex.ru/maps/?um=constructor%3A844b704ae5b61e9c52dd5d32437fabc714d378946f62e7a4a47c0cf32fd3b79f&source=constructorLink"
-REPLIT_URL = "https://telegram-yandex-map-bot.nick72060.repl.co"
-
-app = Flask(__name__)
-
-
-@app.route('/')
-def home():
-    return "Бот активен! Последняя проверка: " + time.ctime()
-
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    button = InlineKeyboardButton(text="🗺️ Открыть карту",
-                                  web_app=WebAppInfo(url=MAP_URL))
-
-    await update.message.reply_text(
-        "Нажмите кнопку ниже, чтобы открыть карту:",
-        reply_markup=InlineKeyboardMarkup([[button]]))
-
-
-async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Используйте /start для открытия карты")
-
-
-def run_flask():
-    app.run(host='0.0.0.0', port=8080)
-
-
-def keep_alive():
-    while True:
-        try:
-            requests.get(REPLIT_URL, timeout=5)
-            logger.info("Пинг успешен")
-        except Exception as e:
-            logger.warning(f"Ошибка пинга: {e}")
-        time.sleep(300)
-
-
-def setup():
-    # Очистка старых версий
-    os.system('pip uninstall -y telegram python-telegram-bot')
-    os.system('pip install python-telegram-bot==20.3 flask requests')
-
-
-def run_bot():
-    setup()
-
-    # Запускаем Flask
-    flask_thread = threading.Thread(target=run_flask)
-    flask_thread.daemon = True
-    flask_thread.start()
-
-    # Запускаем пинг
-    ping_thread = threading.Thread(target=keep_alive)
-    ping_thread.daemon = True
-    ping_thread.start()
-
-    # Настраиваем бота
-    application = ApplicationBuilder().token(TOKEN).build()
-
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("help", help_cmd))
-
-    logger.info("✅ Бот успешно запущен!")
-    application.run_polling()
-
-
-if __name__ == "__main__":
-    run_bot()
+    <script>
+        function openMap() {
+            // URL вашей карты Яндекс
+            const mapUrl = "https://yandex.ru/maps/?um=constructor%3A844b704ae5b61e9c52dd5d32437fabc714d378946f62e7a4a47c0cf32fd3b79f&source=constructorLink";
+            
+            // Проверяем, открыто ли в Telegram WebApp
+            if (window.Telegram && Telegram.WebApp) {
+                Telegram.WebApp.openLink(mapUrl);
+            } else {
+                window.open(mapUrl, '_blank');
+            }
+        }
+    </script>
+</body>
+</html>
