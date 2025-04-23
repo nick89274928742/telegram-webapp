@@ -3,77 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Карта в Telegram</title>
+    <title>Найти золотомат</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
+            margin: 0;
+            padding: 0;
             font-family: Arial, sans-serif;
+            background: #f5f5f5;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
             height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #4285F4, #34A853);
-            color: white;
-            text-align: center;
         }
-        .btn {
-            background: white;
-            color: #4285F4;
+        .map-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        iframe {
             border: none;
-            padding: 15px 30px;
-            font-size: 18px;
-            border-radius: 50px;
-            cursor: pointer;
-            margin-top: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s;
+            width: 100%;
+            flex-grow: 1;
         }
-        .btn:hover {
-            transform: translateY(-3px);
-        }
-        .btn:active {
-            transform: translateY(1px);
-        }
-        .logo {
-            width: 100px;
-            margin-bottom: 20px;
+        .header {
+            background: #4285F4;
+            color: white;
+            padding: 15px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <img src="https://www.google.com/maps/about/images/mapslogos/maps_logo_144dp.png" alt="Google Maps" class="logo">
-    <h1>Найти золотомат</h1>
+    <div class="header">
+        <h2>Найти золотомат</h2>
+    </div>
     
-    <button class="btn" onclick="openMap()">
-        Открыть карту
-    </button>
+    <div class="map-container">
+        <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1s1JZNWwortqkFT7m-jEAlc8XWtwi3vc&ehbc=2E312F"></iframe>
+    </div>
 
     <script>
-        function openMap() {
-            const mapUrl = "https://www.google.com/maps/d/u/0/edit?mid=1s1JZNWwortqkFT7m-jEAlc8XWtwi3vc&usp=sharing";
-            
-            if (window.Telegram?.WebApp?.initData) {
-                // Открываем в Telegram как мини-приложение
-                Telegram.WebApp.openLink(mapUrl, {
-                    try_instant_view: true
-                });
-                
-                // Закрываем WebApp после открытия карты
-                setTimeout(() => {
-                    Telegram.WebApp.close();
-                }, 300);
-            } else {
-                // Для обычных браузеров
-                window.open(mapUrl, '_blank');
-            }
-        }
+        const tg = window.Telegram.WebApp;
         
         // Растягиваем на весь экран
-        if (window.Telegram?.WebApp?.expand) {
-            Telegram.WebApp.expand();
-            Telegram.WebApp.enableClosingConfirmation();
+        tg.expand();
+        
+        // Добавляем кнопку "Назад"
+        tg.BackButton.show();
+        tg.BackButton.onClick(() => {
+            tg.close();
+        });
+        
+        // Проверяем, открыто ли в Telegram
+        if (!tg.initDataUnsafe) {
+            document.body.innerHTML = `
+                <div style="padding: 20px; text-align: center;">
+                    <h2>Это приложение работает только в Telegram</h2>
+                    <p>Откройте его через Telegram-бота</p>
+                </div>
+            `;
         }
     </script>
 </body>
