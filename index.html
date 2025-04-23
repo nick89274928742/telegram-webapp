@@ -14,7 +14,7 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background: linear-gradient(135deg, #0088cc, #00cc88);
+            background: #0088cc;
             color: white;
             text-align: center;
         }
@@ -26,34 +26,24 @@
             font-size: 18px;
             border-radius: 50px;
             cursor: pointer;
-            margin-top: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-        }
-        .btn:active {
-            transform: translateY(1px);
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
     </style>
 </head>
 <body>
-    <h1>Найти золотомат GoldEX</h1>
-    <p>Нажмите кнопку, чтобы открыть карту прямо в Telegram</p>
-    
-    <button class="btn" onclick="openMap()">
-        Открыть карту
-    </button>
+    <h1>🌍 Найти золотомат</h1>
+    <p>Нажмите кнопку ниже</p>
+    <button class="btn" onclick="openMap()">Открыть карту</button>
 
     <script>
         function openMap() {
+            const tg = window.Telegram.WebApp;
             const mapUrl = "https://yandex.ru/maps/?um=constructor%3A844b704ae5b61e9c52dd5d32437fabc714d378946f62e7a4a47c0cf32fd3b79f&source=constructorLink";
             
-            if (window.Telegram?.WebApp?.initData) {
-                // Открываем в Telegram WebApp
-                Telegram.WebApp.openLink(mapUrl, {
+            if (tg.initDataUnsafe) {
+                // Открываем как мини-приложение
+                tg.openLink(mapUrl, {
                     try_instant_view: true
                 });
             } else {
@@ -62,7 +52,7 @@
             }
         }
         
-        // Растягиваем на весь экран в Telegram
+        // Растягиваем на весь экран
         if (window.Telegram?.WebApp?.expand) {
             Telegram.WebApp.expand();
         }
